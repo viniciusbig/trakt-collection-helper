@@ -1,0 +1,26 @@
+{
+    "name": "trakt-collection-helper",
+    "type": "module",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "bin": {
+        "jsonp": "index.js"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "commander": "^8.3.0",
+        "dotenv": "^10.0.0",
+        "enquirer": "^2.3.6",
+        "mdata": "^2.0.1",
+        "node-fetch": "^3.1.0",
+        "table": "^6.7.5",
+        "trakt.tv": "^8.1.1",
+        "trakt.tv-matcher": "^8.0.2"
+    }
+}
