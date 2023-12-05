@@ -106,6 +106,7 @@ const readMetaFile = (fileName) => {
 
 /**
  * Check if path already have a poster image
+ * 
  * @param {string} dirPath 
  * @returns 
  */
@@ -114,6 +115,12 @@ const hasPoster = dirPath => {
     return existsSync(file);
 }
 
+/**
+ * Check if path already have an episode file
+ * 
+ * @param {string} dirPath 
+ * @returns 
+ */
 const hasEpisodes = dirPath => {
     const file = path.join(dirPath, 'episodes.json');
     return existsSync(file);

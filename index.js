@@ -62,6 +62,4 @@ cli
     )
     .action(trakt.logout);
 
-
-
 cli.parse(process.argv);
