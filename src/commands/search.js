@@ -27,6 +27,7 @@ const mdataOptions = {
 
 // create a new trake client
 const traktClient = new trakt(traktOptions);
+
 // create a new mdata client
 const mdata = new MData(mdataOptions);
 
@@ -60,6 +61,13 @@ const isNotCommonFolder = dirPath => {
         !dirPath.includes(".Trash");
 }
 
+/**
+ * Check if a TV show show be ignored loocking into info.json file
+ * and checking for a key `ignore` .
+ * 
+ * @param {string} dirPath 
+ * @returns 
+ */
 const isNotIgnored = dirPath => {
     if (isShow(dirPath)) {
         const meta = readMetaFile(path.join(dirPath, 'info.json'));
@@ -151,17 +159,41 @@ async function downloadFile(url, dirPath, fileName) {
     return writeFileSync(file, buffer);
 }
 
+/**
+ * Creates a list of all shows inside a folder.
+ * 
+ * This assume that `dirPath` is a directory with one directory for each TV Show
+ * 
+ *  ```
+ *      /example/series/
+ *          Breaking Bad/
+ *              Season 01/
+ *                  S01E01/
+ *                  S01E02/
+ *                  ...
+ *          Lost/
+ *              Season 01/
+ *                  S01E01/
+ *                  S01E02/
+ *                  ...
+ * 
+ * Output a table with all shows listed
+ * 
+ * @param {string} dirPath 
+ * @param {*} options 
+ */
 async function summary(dirPath, options) {
 
-    console.log("iniciando");
+    // start timmer
+    console.time("summary");
 
     // ready all folders with full path
     let files = readdirSync(dirPath).map(fileName => {
             return path.join(dirPath, fileName)
         })
-        .filter(isDirectory)
-        .filter(isNotCommonFolder)
-        .filter(isNotIgnored);
+        .filter(isDirectory)            // just add folders
+        .filter(isNotCommonFolder)      // remove common folders
+        .filter(isNotIgnored);          // remove if TV show is marked as ignore
 
     let dataTable = [];
 
@@ -185,7 +217,7 @@ async function summary(dirPath, options) {
         }
 
         const metaFile = readMetaFile(path.join(file, 'info.json'));
-        console.log(metaFile);
+        // console.log(metaFile);
 
         dataTable.push([
             metaFile.title,
@@ -198,23 +230,31 @@ async function summary(dirPath, options) {
 
     console.log(table(dataTable, tableConfig));
 
-    console.log("finalizando");
+    // stop timmer
+    console.timeEnd("summary");
 }
 
+/**
+ * Search in Trakt.tv and create a info.json file with metadata for all series in a path
+ * 
+ * @param {string} dirPath 
+ * @param {*} options 
+ */
 async function getInfoOnTraktTv(dirPath, options) {
 
-    console.log("iniciando");
+    // start timmer
+    console.time("trakt-info");
 
     // ready all folders with full path
     let files = readdirSync(dirPath).map(fileName => {
             return path.join(dirPath, fileName)
         })
-        .filter(isDirectory)
-        .filter(isNotCommonFolder)
-        .filter(isNotIgnored);
+        .filter(isDirectory)            // just add folders
+        .filter(isNotCommonFolder)      // remove common folders
+        .filter(isNotIgnored);          // remove if TV show is marked as ignore
 
     if (!options.force) {
-        // filter folders without a match show
+        // filter folders without a match show (a `info.json` file)
         files = files.filter(isNotShow);
     }
 
@@ -226,6 +266,7 @@ async function getInfoOnTraktTv(dirPath, options) {
         let showName = path.basename(file);
         let traktId = null;
 
+        // Select traktId for this show from file, or from a search in trakt.tv
         if (isNotShow(file)) {
 
             // get search from trakt
@@ -264,13 +305,26 @@ async function getInfoOnTraktTv(dirPath, options) {
             extended: 'full'
         });
 
-        console.log(showName);
-
+        console.log('Saving ' + path.join(file, 'info.json'));
         createMetaFile(path.join(file, 'info.json'), showData.data);
     }
 
-    console.log("finalizando");
+    // stop timmer
+    console.time("trakt-info");
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 async function getImages(dirPath, options) {
 

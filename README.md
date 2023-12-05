@@ -18,15 +18,27 @@ This script assumes we have a root folder with all Series and inside of each Ser
 ## Commands
 
 `mytrakt summary`
+
 Summary list of all shows inside a path.
+Usefull to list all Series in a folder or External Driver.
+
+`mytrakt get-info`
+
+Get info metadata about all series in a path. 
+This will create a `info.json` file if not present. 
+Use `--force` flag to force info to be downloaded again.
 
 `mytrakt get-images`
+
 Get poster images for all show in a path.
 This will create a `poster.jpg` file if not present. Use `--force` flag to force images to be downloaded again.
 
-`mytrakt get-info`
-Get info metadata about all series in a path. 
-This will create a `info.json` file if not present. Use `--force` flag to force info to be downloaded again.
 
 `mytrakt get-episodes`
+
 Get episode metadata about all series in a path. This will create a `episodes.json` file if not present. Use `--force` flag to force info to be downloaded again.
+
+## References
+
+- https://cheatcode.co/tutorials/how-to-build-a-command-line-interface-cli-using-node-js
+- 

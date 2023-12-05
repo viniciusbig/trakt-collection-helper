@@ -7,19 +7,31 @@ import * as trakt from "./commands/search.js"
 // load .env
 dotenv.config();
 
-cli.description("Syncronize my local series collection with traks.tv");
+cli.description("Helper methods to handle my media library in my local environment. It also connects to trakt.tv to syncronize episodes");
 cli.name("mytrakt");
 cli.usage("<command>");
+// do not want Commander to add the default help command to our CLI/
 cli.addHelpCommand(false);
+// remove the built-in -h or --help option flag
 cli.helpOption(false);
+
 
 cli
     .command("summary")
     .argument("<path>", "Path with all series folder.")
     .description(
-        "Summary list of all shows inside a folder"
+        "Creates a list of all shows inside a folder"
     )
     .action(trakt.summary);
+
+cli
+    .command("get-info")
+    .argument("<path>", "Path with all series folder.")
+    .option("-f, --force", "Force update metadata from Trakt")
+    .description(
+        "Search in Trakt.tv and create a info.json file with metadata for all series in a path"
+    )
+    .action(trakt.getInfoOnTraktTv);
 
 cli
     .command("get-images")
@@ -30,14 +42,7 @@ cli
     )
     .action(trakt.getImages);
 
-cli
-    .command("get-info")
-    .argument("<path>", "Path with all series folder.")
-    .option("-f, --force", "Force update metadata from Trakt")
-    .description(
-        "Get info metadata about all series in a path"
-    )
-    .action(trakt.getInfoOnTraktTv);
+
 
 cli
     .command("get-episodes")
