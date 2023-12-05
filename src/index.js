@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
 import cli from "commander";
-import dotenv from 'dotenv';
-import * as trakt from "./commands/search.js"
+import dotenv from "dotenv";
+import figlet from "figlet";
+import * as trakt from "./commands/trakt.js"
+
+console.log(figlet.textSync("MyTrakt"));
 
 // load .env
 dotenv.config();
@@ -41,8 +44,6 @@ cli
         "Get poster images for all show in a path."
     )
     .action(trakt.getImages);
-
-
 
 cli
     .command("get-episodes")

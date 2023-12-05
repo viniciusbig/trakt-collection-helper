@@ -313,31 +313,25 @@ async function getInfoOnTraktTv(dirPath, options) {
     console.time("trakt-info");
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**
+ * Get a poster image for all series in a path
+ * 
+ * @param {string} dirPath 
+ * @param {object} options 
+ */
 async function getImages(dirPath, options) {
 
-    console.log("iniciando");
+    // start timmer
+    console.time("images");
 
     // ready all folders with full path
     let files = readdirSync(dirPath).map(fileName => {
             return path.join(dirPath, fileName)
         })
-        .filter(isDirectory)
-        .filter(isNotCommonFolder)
-        .filter(isNotIgnored)
-        .filter(isShow);
+        .filter(isDirectory)            // just add folders
+        .filter(isNotCommonFolder)      // remove common folders
+        .filter(isNotIgnored)           // remove if TV show is marked as ignore
+        .filter(isShow);                // just add folders with `info.json`
 
     // https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop
     // If you want to read the files in sequence, you cannot use forEach indeed.
@@ -354,14 +348,15 @@ async function getImages(dirPath, options) {
         // get trakdID from file
         const meta = readMetaFile(path.join(file, 'info.json'));
 
-        // get images 
-
+        // Using trakt.tv-images `https://github.com/vankasteelj/trakt.tv-images`
         // let showImages = await traktClient.images.get({
         //     //tmdb: meta.ids.tmdb, // optional, recommended
         //     //imdb: meta.ids.imdb, // starts with 'tt' prefix, recommended
         //     tvdb: meta.ids.tvdb, // optional, recommended
         //     type: 'show' // can be 'movie', 'show' or 'episode', person
         // }, false);
+
+        // Using MData `https://github.com/vankasteelj/mdata/`
         let showImages = await mdata.images.show({ imdb: meta.ids.imdb });
 
         if (showImages.poster) {
@@ -372,12 +367,20 @@ async function getImages(dirPath, options) {
         }
     }
 
-    console.log("finalizando");
+    // stop timmer
+    console.time("images");
 }
 
+/**
+ * Get the episodes list from Trakt.tv and save it in `episodes.json`
+ * 
+ * @param {string} dirPath 
+ * @param {object} options 
+ */
 async function getEpisodes(dirPath, options) {
 
-    console.log("iniciando");
+    // start timmer
+    console.time("episodes");
 
     // ready all folders with full path
     let files = readdirSync(dirPath).map(fileName => {
@@ -401,8 +404,6 @@ async function getEpisodes(dirPath, options) {
             continue;
         }
 
-        console.log(`Downloading episodes from ${showName}`);
-
         // get trakdID from file
         const meta = readMetaFile(path.join(file, 'info.json'));
         traktId = meta.ids.trakt;
@@ -417,7 +418,8 @@ async function getEpisodes(dirPath, options) {
         console.log(`${showName} episodes saved`);
     }
 
-    console.log("finalizando");
+    // stop timmer
+    console.time("episodes");
 }
 
 async function login() {
@@ -472,7 +474,7 @@ async function restoreSession() {
 
         if (token.access_token != newToken.access_token) {
             console.log("Refreshing token");
-            createMetaFile(tokenFile, token2);
+            createMetaFile(tokenFile, newToken);
         }
     }
 }
