@@ -4,6 +4,7 @@ import cli from "commander";
 import dotenv from "dotenv";
 import figlet from "figlet";
 import * as trakt from "./commands/trakt.js"
+import * as local from "./commands/local.js"
 
 console.log(figlet.textSync("MyTrakt"));
 
@@ -67,5 +68,13 @@ cli
         "Logout from Trakt API"
     )
     .action(trakt.logout);
+
+cli
+    .command("create-folders")
+    .argument("<path>", "Path for a folder with all episodes.")
+    .description(
+        "Create folders for shows, series and episodes based on the file name. Move everything to the correct place. Usefull for the torrent folder."
+    )
+    .action(local.createFolders);
 
 cli.parse(process.argv);
