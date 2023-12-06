@@ -444,7 +444,7 @@ async function getEpisodes(dirPath, options) {
             extended: 'episodes'
         });
 
-        createMetaFile(path.join(file, 'episodes.json'), showData.data);
+        createMetaFile(path.join(file, 'episodes.json'), showData);
         console.log(`${showName} episodes saved`);
     }
 
