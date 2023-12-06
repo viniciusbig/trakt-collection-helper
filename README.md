@@ -27,6 +27,13 @@ npm link
 
 After that the command `mytrakt` should be available for any folder.
 
+Create a `.env` file based con `.env-sample` and fill up with the information
+
+API Keys for images
+ - https://fanart.tv/get-an-api-key/
+ - https://www.themoviedb.org/settings/api
+ - https://thetvdb.com/dashboard/account/apikey
+
 ## Commands
 
 `mytrakt summary`
@@ -37,8 +44,12 @@ Usefull to list all Series in a folder or External Driver.
 `mytrakt get-info`
 
 Get info metadata about all series in a path. 
-This will create a `info.json` file if not present. 
+This will create a `info.json` file if not present.
+
 Use `--force` flag to force info to be downloaded again.
+
+Use `--force` along with `--remove` flag to delete `info.json` file.
+> Use with caution! This is a destructive action
 
 `mytrakt get-images`
 

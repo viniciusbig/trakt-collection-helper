@@ -18,7 +18,6 @@ cli.addHelpCommand(false);
 // remove the built-in -h or --help option flag
 cli.helpOption(false);
 
-
 cli
     .command("summary")
     .argument("<path>", "Path with all series folder.")
@@ -30,6 +29,7 @@ cli
 cli
     .command("get-info")
     .argument("<path>", "Path with all series folder.")
+    .option("-r, --remove", "Remove current info.json so we can start over")
     .option("-f, --force", "Force update metadata from Trakt")
     .description(
         "Search in Trakt.tv and create a info.json file with metadata for all series in a path"

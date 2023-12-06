@@ -134,6 +134,11 @@ const hasEpisodes = dirPath => {
     return existsSync(file);
 }
 
+const removeShow = dirPath => {
+    const file = path.join(dirPath, 'info.json');
+    return unlinkSync(file);
+}
+
 // todo - fix
 const getAllFiles = function(dirPath, arrayOfFiles) {
     let files = readdirSync(dirPath)
@@ -266,6 +271,12 @@ async function getInfoOnTraktTv(dirPath, options) {
         let showName = path.basename(file);
         let traktId = null;
 
+        if (options.remove && isShow(file)) {
+            console.log(`Removing info.json from ${file}`);
+            removeShow(file);
+            continue;
+        }
+
         // Select traktId for this show from file, or from a search in trakt.tv
         if (isNotShow(file)) {
 
@@ -275,8 +286,13 @@ async function getInfoOnTraktTv(dirPath, options) {
                 type: 'show'
             });
 
+            if (searchResults.length == 0) {
+                console.error(`No show named ${showName} found`);
+                continue;
+            }
+            
             // map results
-            const showOptions = searchResults.data.map(show => {
+            const showOptions = searchResults.map(show => {
                 return {
                     name: show.show.ids.trakt,
                     message: show.show.title + " (" + show.show.year + ")",
@@ -306,11 +322,11 @@ async function getInfoOnTraktTv(dirPath, options) {
         });
 
         console.log('Saving ' + path.join(file, 'info.json'));
-        createMetaFile(path.join(file, 'info.json'), showData.data);
+        createMetaFile(path.join(file, 'info.json'), showData);
     }
 
     // stop timmer
-    console.time("trakt-info");
+    console.timeEnd("trakt-info");
 }
 
 /**
@@ -322,7 +338,7 @@ async function getInfoOnTraktTv(dirPath, options) {
 async function getImages(dirPath, options) {
 
     // start timmer
-    console.time("images");
+    console.time("get-images");
 
     // ready all folders with full path
     let files = readdirSync(dirPath).map(fileName => {
@@ -356,10 +372,24 @@ async function getImages(dirPath, options) {
         //     type: 'show' // can be 'movie', 'show' or 'episode', person
         // }, false);
 
-        // Using MData `https://github.com/vankasteelj/mdata/`
-        let showImages = await mdata.images.show({ imdb: meta.ids.imdb });
+        let showImages = {};
+
+        try {
+            // Using MData `https://github.com/vankasteelj/mdata/`
+            showImages = await mdata.images.show({ 
+                // imdb: meta.ids.imdb,
+                // tmdb: meta.ids.tmdb,
+                tvdb: meta.ids.tvdb,
+                // fanart: meta.ids.imdb,
+                // omdb: <your api key></your>
+            });
+        } catch (e) {
+            // console.log(e);
+            console.log(`${showName} doesn't have any image available`);
+        }
 
         if (showImages.poster) {
+            console.log(showImages.poster);
             let poster = await downloadFile(showImages.poster, file, 'poster.jpg');
             console.log(`${showName} poster downloaded`);
         } else {
@@ -368,7 +398,7 @@ async function getImages(dirPath, options) {
     }
 
     // stop timmer
-    console.time("images");
+    console.timeEnd("get-images");
 }
 
 /**
@@ -380,7 +410,7 @@ async function getImages(dirPath, options) {
 async function getEpisodes(dirPath, options) {
 
     // start timmer
-    console.time("episodes");
+    console.time("get-episodes");
 
     // ready all folders with full path
     let files = readdirSync(dirPath).map(fileName => {
@@ -419,7 +449,7 @@ async function getEpisodes(dirPath, options) {
     }
 
     // stop timmer
-    console.time("episodes");
+    console.timeEnd("get-episodes");
 }
 
 async function login() {
